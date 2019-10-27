@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_IMAGE_CAPTURE = 2;
     private StorageReference storageRef;
 
     ImageView imageData;
