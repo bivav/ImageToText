@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#1565C0</color>
+    <color name="colorPrimaryDark">#175BAA</color>
+    <color name="colorAccent">#1565C0</color>
+
+    <color name="ripple_color">#92B1BFCA</color>
+
+    <!-- Google Logo Color -->
+    <color name="google_blue">#4285F4</color>
+    <color name="google_green">#2f974b</color>
+    <color name="google_yellow">#FBBC05</color>
+    <color name="google_red">#EA4335</color>
+
 </resources>

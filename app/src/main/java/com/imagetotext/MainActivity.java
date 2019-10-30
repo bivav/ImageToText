@@ -14,9 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions;
@@ -29,7 +32,14 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,10 +49,14 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageData;
     Button take_picture;
     Button get_text;
+    String image_storage_location = "", processed_image_text = "";
 
     Bitmap imageBitmap;
 
     TextView text_processed;
+
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference();
 
 
     @Override
@@ -54,9 +68,7 @@ public class MainActivity extends AppCompatActivity {
         get_text = findViewById(R.id.get_text);
 
         text_processed = findViewById(R.id.text_processed);
-
         imageData = findViewById(R.id.imageData);
-
         storageRef = FirebaseStorage.getInstance().getReference();
 
         take_picture.setOnClickListener(new View.OnClickListener() {
@@ -85,39 +97,55 @@ public class MainActivity extends AppCompatActivity {
 
     private void getImageToText(){
 
-        File file = new File(getCacheDir(), "UniqueFileName" + ".jpg");
-
-        Bitmap bitmap = ((BitmapDrawable) imageData.getDrawable()).getBitmap();
-        FileOutputStream fos = null;
-
-        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
-
-        FirebaseVisionTextRecognizer textRecognizer = FirebaseVision.getInstance()
-                .getOnDeviceTextRecognizer();
-
-        textRecognizer.processImage(image).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
-            @Override
-            public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                Log.i("IMAGE_ANALYZE", firebaseVisionText.getText());
-
-                text_processed.setText(firebaseVisionText.getText());
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("IMAGE_ANALYZE", e.getMessage());
-
-            }
-        });
-
+        final String key = myRef.child("imagetotext-cc").push().getKey();
+        final Map<String, Object> childUpdates = new HashMap<>();
 
         try {
+
+            File file = new File(getCacheDir(), "UniqueFileName" + ".jpg");
+
+            Bitmap bitmap = ((BitmapDrawable) imageData.getDrawable()).getBitmap();
+            FileOutputStream fos = null;
+
+            FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
+
+            FirebaseVisionTextRecognizer textRecognizer = FirebaseVision.getInstance()
+                    .getOnDeviceTextRecognizer();
+
+            textRecognizer.processImage(image).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                @Override
+                public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                    Log.i("IMAGE_ANALYZE", firebaseVisionText.getText());
+
+                    text_processed.setText(firebaseVisionText.getText());
+
+                    processed_image_text = firebaseVisionText.getText();
+
+                    childUpdates.put(key + "/text_processed", processed_image_text);
+                    myRef.updateChildren(childUpdates);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i("IMAGE_ANALYZE", e.getMessage());
+
+                }
+            });
+
+
             fos = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 
             Uri fil = Uri.fromFile(file);
-            StorageReference riversRef = storageRef.child("images/rivers1.jpg");
+
+            Date c = Calendar.getInstance().getTime();
+            System.out.println("Current time => " + c);
+
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+            String currentDateTimeString = df.format(c);
+
+            StorageReference riversRef = storageRef.child("images/" + "img-" + currentDateTimeString + ".jpg");
 
             riversRef.putFile(fil)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -126,7 +154,17 @@ public class MainActivity extends AppCompatActivity {
                             // Get a URL to the uploaded content
 //                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
                             Log.i("IMAGE_UPLOAD", taskSnapshot.getMetadata().getPath());
+
+                            image_storage_location = taskSnapshot.getMetadata().getPath();
+
                             Log.i("IMAGE_UPLOAD", "File Uploaded");
+
+                            if (image_storage_location != null) {
+
+                                childUpdates.put(key +"/image_location", image_storage_location);
+                                myRef.updateChildren(childUpdates);
+                            }
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -137,9 +175,14 @@ public class MainActivity extends AppCompatActivity {
                     });
 
 
-        } catch (FileNotFoundException e) {
+
+
+        } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Take a picture first!", Toast.LENGTH_LONG).show();
         }
+
+
 
 
 
