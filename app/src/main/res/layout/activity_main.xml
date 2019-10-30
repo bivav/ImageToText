@@ -3,14 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="#fff"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
     <ImageView
         android:id="@+id/imageData"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="152dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="16dp"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -20,35 +22,38 @@
         app:srcCompat="@mipmap/ic_launcher" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/take_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
         android:layout_marginBottom="48dp"
-        android:text="Button"
+        android:text="@string/take_picture"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/get_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="48dp"
-        android:text="Button"
+        android:text="@string/get_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toEndOf="@+id/button" />
+        app:layout_constraintStart_toEndOf="@+id/take_picture" />
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="300dp"
-        android:layout_height="100dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        android:id="@+id/text_processed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/abeezee"
+        android:gravity="center"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toTopOf="@+id/take_picture"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageData"
-        app:layout_constraintVertical_bias="0.59" />
+        app:layout_constraintVertical_bias="0.0"
+        android:text="Take a Picture To Analyze" />
 </androidx.constraintlayout.widget.ConstraintLayout>

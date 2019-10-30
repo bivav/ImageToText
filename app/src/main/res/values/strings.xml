@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Image To Text</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="get_text">Get Text</string>
 </resources>
