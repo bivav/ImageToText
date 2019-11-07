@@ -142,10 +142,12 @@ public class MainActivity extends AppCompatActivity {
             Date c = Calendar.getInstance().getTime();
             System.out.println("Current time => " + c);
 
-            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-            String currentDateTimeString = df.format(c);
+//            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+            SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhh:mm:ss", Locale.ENGLISH);
+            String format = s.format(new Date());
 
-            StorageReference riversRef = storageRef.child("images/" + "img-" + currentDateTimeString + ".jpg");
+
+            StorageReference riversRef = storageRef.child("images/" + "img-" + format + ".jpg");
 
             riversRef.putFile(fil)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
